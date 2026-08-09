@@ -3,7 +3,7 @@ Ai-Palmistry-Tarot-Platform-
 An AI-powered web application that provides palmistry predictions and tarot card readings using machine learning and modern web technologies.
 
 🔮 AI Palmistry and Tarot Platform
-An AI-powered web application that combines Palmistry Analysis and Tarot Card Reading to provide personalized insights using Artificial Intelligence and Machine Learning. The platform offers users an interactive experience by analyzing palm images, generating AI-based predictions, and delivering virtual tarot card readings through a modern, user-friendly interface.
+An AI-powered web application that combines Palmistry Analysis and Tarot Card Reading to provide personalized insights using Artificial Intelligence and Machine Learning. The platform offers users an interactive experience by analyzing palm images, generating AI-based predictions, and delivering virtual tarot card readings through a modern, user-friendly  interface.
 
 📌 Project Overview
 The AI Palmistry and Tarot Platform is designed to bridge traditional spiritual practices with modern AI technology. Users can upload palm images, receive AI-generated palmistry insights, explore tarot card readings, and maintain a history of their readings securely.
