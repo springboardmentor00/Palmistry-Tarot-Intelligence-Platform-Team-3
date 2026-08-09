@@ -84,7 +84,7 @@ cd ../backend
 npm install
 Install Python Dependencies
 pip install -r requirements.txt
-▶️ Running the Project
+Running the Project
 Start Backend
 cd backend
 npm start
@@ -93,7 +93,7 @@ cd frontend
 npm start
 Run AI Model
 python model.py
-👥 Team Workflow
+Team Workflow
 This repository follows a feature branch workflow.
 
 Each team member works on a separate branch.
