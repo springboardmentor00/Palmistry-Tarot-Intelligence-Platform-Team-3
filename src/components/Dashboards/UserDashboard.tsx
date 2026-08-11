@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserProfile, SynthesisReport } from '../../types';
 import { INITIAL_REPORTS } from '../../data/mockDatabase';
+import { saveSpiritualGoalsForUserDB } from '../../database/userDatabase';
 import { 
   User, 
   BookOpen, 
@@ -13,7 +14,8 @@ import {
   Award,
   ChevronRight,
   TrendingUp,
-  FileText
+  FileText,
+  Database
 } from 'lucide-react';
 
 interface UserDashboardProps {
@@ -36,8 +38,12 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, saved
 
   const handleAddGoal = () => {
     if (newGoal.trim()) {
-      setGoals([...goals, newGoal.trim()]);
+      const updated = [...goals, newGoal.trim()];
+      setGoals(updated);
       setNewGoal('');
+      if (currentUser.email) {
+        saveSpiritualGoalsForUserDB(currentUser.email, updated);
+      }
     }
   };
 
@@ -73,10 +79,18 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ currentUser, saved
           </div>
         </div>
 
-        <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 text-xs space-y-1 shrink-0">
-          <div className="text-slate-400">Primary Focus Area:</div>
-          <div className="font-bold text-indigo-300">{focusArea}</div>
-          <div className="text-[10px] text-emerald-400 font-semibold">Daily Guidance Alerts: Active</div>
+        <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 text-xs space-y-1.5 shrink-0">
+          <div className="flex items-center space-x-1.5 text-indigo-400 font-semibold text-[11px]">
+            <Database className="w-3.5 h-3.5" />
+            <span>Database Storage Key</span>
+          </div>
+          <div className="font-mono text-[11px] text-white truncate max-w-[200px]" title={currentUser.email}>
+            {currentUser.email}
+          </div>
+          <div className="text-[10px] text-emerald-400 font-semibold flex items-center space-x-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>User Data Isolated & Syncing</span>
+          </div>
         </div>
       </div>
 
