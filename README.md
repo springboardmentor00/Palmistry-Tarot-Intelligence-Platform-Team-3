@@ -280,7 +280,7 @@ main
 ├── Pranesh
 ├── Havila Hydi Gurram
 ├── Kapuganti Venkata Kowshik
-├── AkshayaTarumani
+├── Akshaya Tarumani
 └── Milkal
 ```
 
@@ -310,12 +310,12 @@ project**.
 
 ### Team Members
 
--   Subhransu
--   Harshika
+-   Subhransu Sekhar Barik
+-   Harshika Darda
 -   Pranesh
--   Havila
--   Kowshik
--   Akshayaa
+-   Havila Hydi Gurram
+-   Kapuganti Venkata Kowshik
+-   Akshaya Tarumani
 -   Milakal
 
 ------------------------------------------------------------------------
