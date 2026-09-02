@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { UserProfile, UserRole } from '../types';
-import { INITIAL_USERS } from '../data/mockDatabase';
-import { KeyRound, Mail, User, X, CheckCircle2, LogIn, AlertCircle, ArrowRight } from 'lucide-react';
+import { getAllUserAccountsDB, upsertUserAccountDB, getUserRecordByEmailDB } from '../database/userDatabase';
+import { recordUserCredentialsDB, verifyUserLoginCredentialsDB } from '../database/userCredentialsDatabase';
+import { KeyRound, Mail, User, X, CheckCircle2, LogIn, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -19,25 +20,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [ssoProcessing, setSsoProcessing] = useState<'google' | 'apple' | null>(null);
 
-  // Helper to retrieve registered users list from localStorage or fallback to INITIAL_USERS
   const getRegisteredUsers = (): UserProfile[] => {
-    try {
-      const stored = localStorage.getItem('celestial_registered_users');
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch (err) {
-      console.error("Error reading registered users from localStorage", err);
-    }
-    return INITIAL_USERS;
-  };
-
-  const saveRegisteredUsers = (users: UserProfile[]) => {
-    try {
-      localStorage.setItem('celestial_registered_users', JSON.stringify(users));
-    } catch (err) {
-      console.error("Error saving registered users to localStorage", err);
-    }
+    return getAllUserAccountsDB();
   };
 
   const formatNameFromEmail = (userEmail: string): string => {
@@ -61,12 +45,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
     const existing = users.find(u => u.email.toLowerCase() === cleanEmail);
 
     if (existing) {
-      // Account exists, successfully sign in
+      // Validate credentials against the password vault if password entered
+      if (password) {
+        const verify = verifyUserLoginCredentialsDB(cleanEmail, password);
+        if (!verify.isValid && verify.reason === 'Invalid password') {
+          setErrorMessage('Invalid password. Please check your credentials and try again.');
+          return;
+        }
+      }
+
+      // Record / update credentials on successful login
+      recordUserCredentialsDB(existing, password);
+
       const isFirstLogin = existing.isFirstTime || (!existing.birthDate && !existing.birthPlace);
       const loggedInUser: UserProfile = {
         ...existing,
         isLoggedIn: true
       };
+      
+      // Ensure database record for user-created data exists for this login email
+      getUserRecordByEmailDB(cleanEmail, loggedInUser);
+      upsertUserAccountDB(loggedInUser);
+
       localStorage.setItem('jwt_token', `jwt_${loggedInUser.id}_${Date.now()}`);
       onLoginSuccess(loggedInUser, isFirstLogin);
       onClose();
@@ -113,11 +113,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
       isFirstTime: true
     };
 
-    const updatedList = [...users, newUser];
-    saveRegisteredUsers(updatedList);
+    // Store user credentials (userId and password) into the dedicated credentials database file
+    recordUserCredentialsDB(newUser, password || 'SeekerPass2026!');
+
+    // Save user to account DB and initialize user data DB for this email
+    upsertUserAccountDB(newUser);
+    getUserRecordByEmailDB(cleanEmail, newUser);
 
     localStorage.setItem('jwt_token', `jwt_${newUser.id}_${Date.now()}`);
-    setSuccessMessage("Registration successful! Signing you in...");
+    setSuccessMessage("Registration successful! Credentials stored. Signing you in...");
     setTimeout(() => {
       onLoginSuccess(newUser, true);
       onClose();
@@ -162,10 +166,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
           isLoggedIn: true,
           isFirstTime: true
         };
-        const updatedList = [...users, existing];
-        saveRegisteredUsers(updatedList);
+        // Record SSO credentials
+        recordUserCredentialsDB(existing, `${provider}_oauth_secure_${Date.now()}`);
+        upsertUserAccountDB(existing);
+        getUserRecordByEmailDB(ssoEmail, existing);
       } else {
         isFirstLogin = existing.isFirstTime === true || (!existing.birthDate && !existing.birthPlace);
+        recordUserCredentialsDB(existing);
       }
 
       const loggedInUser: UserProfile = {
