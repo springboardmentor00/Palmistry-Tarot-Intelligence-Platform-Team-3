@@ -305,7 +305,7 @@ into `main`.
 
 ## 👥 Team
 
-Developed collaboratively as a **B.Tech Computer Science & Engineering
+Developed collaboratively as a **Infosys Springboard 7.0 Virtual Intrenship 
 project**.
 
 ### Team Members
