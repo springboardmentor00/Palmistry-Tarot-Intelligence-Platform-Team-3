@@ -12,13 +12,15 @@ datasets/Hands/
 datasets/test.jpg
 *.zip
 
-# Environment variables
-.env
-.env.*
-
 # IDE
 .vscode/
 .idea/
 
-# OS files
-Thumbs.db
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
